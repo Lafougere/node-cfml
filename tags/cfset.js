@@ -17,13 +17,13 @@ function evaluateLValue(lval, vars, path, line){
 function execute(attribString, content, vars, fn, evalVars, path, line){
 	// parse the attribute string and eval
 	reAttribs.lastIndex = 0
-	var parsed = reAttribs.exec(attribString);
+	var parsed = reAttribs.exec(attribString)
 	if (parsed[2].length){
 		// assignment
-		var lVal = evaluateLValue(parsed[1].trim(), vars, path, line);
-		var rVal = cfUtils.evaluateRValue(parsed[3].trim(), vars, path, line);
-		with (vars) eval("vars."+lVal+" " + parsed[2] + " rVal");
-		return {};
+		var lVal = evaluateLValue(parsed[1].trim(), vars, path, line)
+		var rVal = cfUtils.evaluateRValue(parsed[3].trim(), vars, path, line)
+		with (vars) eval("vars."+lVal+" " + parsed[2] + " rVal")
+		return {}
 	}
 	try {
 		with (vars) eval(parsed[1])
@@ -35,6 +35,6 @@ function execute(attribString, content, vars, fn, evalVars, path, line){
 		err.message = msg
 		throw err
 	}
-	return {};
+	return {}
 }
 exports.execute = execute
