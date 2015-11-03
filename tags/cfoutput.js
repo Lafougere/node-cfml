@@ -26,7 +26,7 @@ exports.execute = function(attribString, content, vars, execFn, evalVars, path, 
 	// TODO: implement cfoutput query
 	// get the tag body
 	var parsed = getTagBody(content)
-	if (cfUtils.containsCFTagst(parsed.body)) parsed.body = execFn(parsed.body, '', vars, true)
+	if (cfUtils.containsCFTags(parsed.body)) parsed.body = execFn(parsed.body, '', vars, true)
 	else parsed.body = cfUtils.replacePoundSigns(parsed.body, vars, path, line)
 	return {
 		out: parsed.body,
