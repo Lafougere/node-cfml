@@ -12,14 +12,14 @@ describe('The CFINCLUDE tag', function() {
 			var str = 'hello <cfinclude template="test/testinclude.cfm">'
 			var vars = {}
 			var result = cfml.processTemplate(str, '', vars)
-			expect(result).to.be('hello world')
+			expect(result.trim()).to.be('hello world')
 		})
 
 		it('should be passed variables defined in the included template', function(){
 			var str = '<cfset test = "hello"><cfinclude template="test/testinclude2.cfm"> <cfoutput>#test2#</cfoutput>'
 			var vars = {}
 			var result = cfml.processTemplate(str, '', vars)
-			expect(result).to.be('hello world\n foo')
+			expect(result.trim()).to.be('hello world\n\n foo')
 		})
 
 	})
@@ -30,12 +30,9 @@ describe('The CFINCLUDE tag', function() {
 			var str = '<cfset test = "hello"><cfinclude template="test/testinclude2.cfm">'
 			var vars = {}
 			var result = cfml.processTemplate(str, '', vars)
-			console.log(result)
-			expect(result).to.be('hello world\n')
+			expect(result.trim()).to.be('hello world')
 		})
 
 	})
-
-
 
 })

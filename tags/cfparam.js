@@ -25,7 +25,7 @@ function execute(attribString, content, vars, path, line){
 		vars[attribs.name] = attribs['default'] || ""
 	}
 	else if (attribs.name && typeof attribs['default'] == 'undefined' && typeof vars[attribs.name]=='undefined'){
-		return {out:"Parameter " + attribs.name + " is required",abort:true}
+		throw {message:"Parameter " + attribs.name + " is required",abort:true}
 	}
 	// TODO : implement type min max and pattern
 	return {};

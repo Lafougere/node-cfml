@@ -37,10 +37,7 @@ function execute(attribString, content, vars, execFn, evalVars, path, line){
 	// parse the attribute string
 	var attribs = parseAttributes(attribString, vars, path, line), parsed = getTagBody(content)
 	if (! attribs.variable) throw 'Variable attribute is required'
-	//console.log(parsed.body)
 	if (cfUtils.containsCFTags(parsed.body)) parsed.body = execFn(parsed.body, '', vars, evalVars)
-	//console.log(this.tagBody)
-	//process.exit()
 	else if (evalVars) parsed.body = cfUtils.replacePoundSigns(parsed.body, vars, path, line)
 	vars[attribs.variable] = parsed.body
 	return {
