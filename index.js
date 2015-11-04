@@ -1,5 +1,5 @@
 // jshint devel:true, curly: false, asi:true,-W049
-/* globals require,console,module */
+/* globals require,console,exports */
 
 var fs = require('fs'),
 	cfUtils = require('./functions'),
@@ -55,36 +55,20 @@ function processTemplate(str, out, vars, evalVars, path, line){
 	return out
 }
 function render(path, vars, callback){
-	//console.log("CFML:"+path)
-	//console.log(opts)
 	read(path, {cache:false}, function(err, strContent){
-		console.time('remove-comments')
+//		console.time('remove-comments')
 		strContent = cfUtils.removeCFMLComments(strContent)
-		console.timeEnd('remove-comments')
-		//console.log(strContent.length)
-		//process.exit()
-		//console.time('exec-template');
-		/*try {
-			var result = executeTemplate(strContent, '', opts, false);
-			while (result.charCodeAt(0)>65000) result = result.substr(1);
-			callback(null, result);
-		}
-		catch (e){
-			console.log('error in template ' + path)
-			console.log(e)
-		}*/
-		console.log(strContent.split('\n'))
+//		console.timeEnd('remove-comments')
         var result = processTemplate(strContent, '', vars, false, path, 0);
 		while (result.charCodeAt(0)>65000) result = result.substr(1)
 		callback(err, result, vars)
 
 		//console.timeEnd('exec-template');
 		//console.timeEnd('total time');
-		//console.log("CONTENT:"+result)
-		//console.log("CHAR"+result.charCodeAt(0))
 
 	})
 
 }
 exports.processTemplate = processTemplate
 exports.render = render
+exports.__express = render
