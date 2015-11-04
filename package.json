@@ -25,6 +25,6 @@
   "homepage": "https://github.com/Lafougere/node-cfml#readme",
   "devDependencies": {
     "expect": "^1.12.2",
-    "expect.js": "^0.3.1",
+    "expect.js": "^0.3.1"
   }
 }
