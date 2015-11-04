@@ -29,6 +29,29 @@ describe('The CFLOOP tags', function() {
 			expect(result).to.be('0-2-3-')
 		})
 
+	})
+
+	describe('The COLLECTION LOOP', function() {
+
+		it('should loop once per object key', function(){
+			var str = '<cfoutput><cfloop collection="test", item="i">#i#-</cfloop></cfoutput>'
+			var vars = {test:{a:'foo',b:'bar',c:'baz'}}
+			var result = cfml.processTemplate(str, '', vars)
+			console.log(result)
+			expect(result).to.be('a-b-c-')
+		})
+
+	})
+
+	describe('The LIST LOOP', function() {
+
+		it('should loop once per list item', function(){
+			var str = '<cfoutput><cfloop list="1,2,3", index="i">#i#-</cfloop></cfoutput>'
+			var vars = {}
+			var result = cfml.processTemplate(str, '', vars)
+			console.log(result)
+			expect(result).to.be('1-2-3-')
+		})
 
 	})
 
