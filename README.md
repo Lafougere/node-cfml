@@ -18,7 +18,7 @@ The implemented tags are:
   * CFABORT
   
 ## Installation
-npm install node-cfml --save
+	npm install node-cfml --save
 
 ## Usage
 	var express = require('express');
@@ -40,5 +40,7 @@ npm install node-cfml --save
 	
 ## Tests
 Just run
+
 	mocha
+
 to run the tests
