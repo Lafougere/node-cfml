@@ -19,6 +19,12 @@ describe('The CFIF/CFELSE/CFELSEIF tags', function() {
 			var result = cfml.processTemplate(str, '', vars)
 			expect(result).to.be('')
 		})
+		it('should support nesting', function(){
+			var str = '<cfif true>hello <cfif true>world</cfif></cfif>'
+			var vars = {}
+			var result = cfml.processTemplate(str, '', vars)
+			expect(result).to.be('hello world')
+		})
 
 	})
 	describe('The CFELSEIF tag', function() {
