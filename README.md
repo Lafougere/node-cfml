@@ -2,11 +2,12 @@
 a simple cfml view engine for node.js/express
 
 ## Introduction
-I always appreciated Coldfusion for its ease of use. One of its great advantages is that CFML markup blends in very well with HTML markup. It has IMHO the cleanest views of any technology I used. node-cfml is a templating engine for Node.js/Express that implements the few CFML tags that make sense in a view.
+I always appreciated Coldfusion for its ease of use. One of its great advantages is that CFML markup blends in very well with HTML markup. It has IMHO the cleanest views of any technology I used. node-cfml is a templating engine for Node.js/Express that implements the few CFML tags that make sense to use in a view.
 
 ## Support
 Only a few CFML tags have been implemented. Most CFML tags wouldn't make sense in a view. 
 The implemented tags are:
+  
   * CFSET
   * CFOUTPUT
   * CFIF
@@ -18,9 +19,11 @@ The implemented tags are:
   * CFABORT
   
 ## Installation
+	
 	npm install node-cfml --save
 
 ## Usage
+	
 	var express = require('express')
 	var app = express()
 	var cfml = require('node-cfml')
