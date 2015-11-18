@@ -2,7 +2,7 @@
   "name": "node-cfml",
   "version": "0.0.2",
   "description": "a CFML view engine for node.js",
-  "main": "index.js",
+  "main": "cfml.js",
   "scripts": {
     "test": "mocha"
   },
@@ -14,6 +14,7 @@
     "cfml",
     "Coldfusion",
     "view",
+    "template",
     "engine",
     "express"
   ],
@@ -24,7 +25,6 @@
   },
   "homepage": "https://github.com/Lafougere/node-cfml#readme",
   "devDependencies": {
-    "expect": "^1.12.2",
     "expect.js": "^0.3.1"
   }
 }

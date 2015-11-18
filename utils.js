@@ -108,7 +108,7 @@ function replaceOperators(str){
 
 function evaluateRValue(rval, vars, path, line){
 	rval = replaceOperators(replacePoundSigns(rval, vars, path, line))
-	console.log( rval)
+	//console.log( rval)
 	if (vars[rval]) return vars[rval]
 	/*var str = 'var r = ' + rval
 	console.log(str)*/
