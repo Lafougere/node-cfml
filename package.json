@@ -1,7 +1,7 @@
 {
   "name": "node-cfml",
   "version": "1.0.0",
-  "description": "a CFML view engine for node.js",
+  "description": "a CFML template engine for node.js",
   "main": "cfml.js",
   "scripts": {
     "test": "mocha"
