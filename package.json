@@ -1,6 +1,6 @@
 {
   "name": "node-cfml",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "a CFML view engine for node.js",
   "main": "cfml.js",
   "scripts": {
