@@ -27,7 +27,6 @@ The implemented CF operators are:
   * LTE, LE
   * GTE, GE
   * NOT
-  * CONTAINS
   * AND, OR
   * MOD
   * &
