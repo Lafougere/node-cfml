@@ -268,8 +268,8 @@ function optimize(arr){
 }
 
 function renderFile(path, vars, callback){
-	var out = render(parseFile(path), vars, callback)
-	return out
+	var out = render(parseFile(path), vars, callback); 
+	return callback(null, out);
 }
 
 function parseFile(path){
