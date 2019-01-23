@@ -61,6 +61,9 @@ function processQueue(str, buf, evalVars, line, path){
 		processComment(str, buf, evalVars, line, path)
 	}
 	else {
+		// Adding an root element to be replaced with the first '<' tag
+		if (buf.length < 1)
+			buf.push('')
 		// other tag
 		buf[buf.length - 1] += '<'
 		str = str.slice(1)
@@ -268,8 +271,8 @@ function optimize(arr){
 }
 
 function renderFile(path, vars, callback){
-	var out = render(parseFile(path), vars, callback); 
-	return callback(null, out);
+	var out = render(parseFile(path), vars, callback)
+	return callback(null, out)
 }
 
 function parseFile(path){
