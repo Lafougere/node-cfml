@@ -245,7 +245,7 @@ function render(compiled, vars, callback){
 			out += tag.render(instr, vars, render)
 		}
 		else if (instr.value) {
-			if (vars[instr.value]) out += vars[instr.value]
+			if (vars[instr.value] !== undefined) out += vars[instr.value]
 			else {
 				var tmp
 				eval('tmp = ' + instr.value)
