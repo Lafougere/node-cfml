@@ -22,42 +22,41 @@ const fs = require('fs'),
 	RESpace = /\s/
 
 
-function parse(str, line, path, evalVars){
+function parse(str, line, path, evalVars) {
 	const buf = []
 	line = line || 1
 	processQueue(str, buf, evalVars, line, path)
+
 	return buf
 }
 
-function processQueue(str, buf, evalVars, line, path){
+function processQueue(str, buf, evalVars, line, path) {
 	let pos = evalVars ? str.search(RETagOrPound) : str.indexOf('<') // skip to next interesting character
 
-	if (pos === -1){
+	if (pos === -1) {
 		// nothing found -> string is pure text -> just add to buffer
 		buf.push(str)
 		str = ''
 		return
 	}
 
-	if (pos > 0){
+	if (pos > 0) {
 		// it is safe to flush contents up to pos
 		const out = str.slice(0, pos)
 		line += out.split('\n').length - 1
 		buf.push(out)
 		str = str.slice(pos)
 	}
-	if (str.charAt(0) == '#'){
+
+	if (str.charAt(0) == '#') {
 		processValue(str, buf, evalVars, line, path)
-	}
-	else if (str.substr(1, 2).toLowerCase() == 'cf'){
+	} else if (str.substr(1, 2).toLowerCase() == 'cf') {
 		// cf tag found
 		processTag(str, buf, evalVars, line, path)
-	}
-	else if (str.substr(1, 4) == '!---'){
+	} else if (str.substr(1, 4) == '!---') {
 		// cf comment found
 		processComment(str, buf, evalVars, line, path)
-	}
-	else {
+	} else {
 		// Adding an root element to be replaced with the first '<' tag
 		if (buf.length < 1)
 			buf.push('')
@@ -69,7 +68,7 @@ function processQueue(str, buf, evalVars, line, path){
 
 }
 
-function processValue(str, buf, evalVars, line, path){
+function processValue(str, buf, evalVars, line, path) {
 	const pos = str.indexOf('#', 1)
 	buf.push({
 		type: 'value',
@@ -80,7 +79,7 @@ function processValue(str, buf, evalVars, line, path){
 	processQueue(str, buf, evalVars, line, path)
 }
 
-function processComment(str, buf, evalVars, line, path){
+function processComment(str, buf, evalVars, line, path) {
 	let match, openCount = 0, start = 0
 	REComment.lastIndex = 1
 
@@ -96,6 +95,7 @@ function processComment(str, buf, evalVars, line, path){
 			openCount++
 		}
 	}
+
 	if (start) {
 		line += (str.slice(0, start).split('\n').length - 1)
 		str = str.slice(start)
@@ -105,7 +105,7 @@ function processComment(str, buf, evalVars, line, path){
 
 }
 
-function processTag(str, buf, evalVars, line, path){
+function processTag(str, buf, evalVars, line, path) {
 	let nameLen = str.search(RESpaceOrGT),
 		tag = {
 			name: str.slice(1, nameLen).toLowerCase(),
@@ -114,7 +114,6 @@ function processTag(str, buf, evalVars, line, path){
 			evalVars: evalVars
 		},
 		tagDef
-
 	str = str.slice(nameLen)
 
 	if (tag.name == 'cfset' || tag.name == 'cfif') str = processExpression(tag, str, buf, evalVars, line, path)
@@ -140,7 +139,7 @@ function processTag(str, buf, evalVars, line, path){
 	processQueue(str, buf, tag.evalVars, line, path)
 }
 
-function processBody(tag, str, buf, evalVars, line, path){
+function processBody(tag, str, buf, evalVars, line, path) {
 	let openCount = 0, match
 	tag.match.lastIndex = 0
 
@@ -158,23 +157,22 @@ function processBody(tag, str, buf, evalVars, line, path){
 	return str
 }
 
-function processExpression(tag, str, buf, evalVars, line, path){
-
+function processExpression(tag, str, buf, evalVars, line, path) {
 	let endTag = false, inQuotes = false, pos, char, currentQuote
-
 	tag.expression = tag.expression || ''
 
-	while (! endTag){
-		if (! inQuotes){
+	while (! endTag) {
+		if (! inQuotes) {
 			pos = str.search(REQuoteOrGT)
 			char = str.charAt(pos)
-			if (char == '"' || char == "'"){
+			if (char == '"' || char == "'") {
 				inQuotes = true
 				currentQuote = char
 				tag.expression += str.slice(0, pos)
 				str = str.slice(pos)
 				continue
 			}
+			
 			// '>' found
 			tag.expression += str.slice(0, pos)
 			str = str.slice(pos + 1)
@@ -191,29 +189,27 @@ function processExpression(tag, str, buf, evalVars, line, path){
 	return str
 }
 
-function processAttributes(tag, str, buf, evalVars, line, path){
-
+function processAttributes(tag, str, buf, evalVars, line, path) {
 	let endTag = false, inQuotes = false, pos, char, currentQuote, attribute = {}
-
 	tag.attributes = tag.attributes || {}
 
-	while (! endTag){
-		if (! inQuotes){
+	while (! endTag) {
+		if (! inQuotes) {
 			while (RESpace.test(str.charAt(0))) str = str.slice(1)
 
-			if (str.charAt(0) == '>'){
+			if (str.charAt(0) == '>') {
 				endTag = true
 				str = str.slice(1)
 				break
 			}
-			if (! attribute.name){
+			if (! attribute.name) {
 				pos = str.search(REAttribNameDelim)
 				attribute.name = str.slice(0, pos).toLowerCase()
 				str = str.slice(pos)
 				// value
 				while (REAttribNameDelim.test(str.charAt(0))) str = str.slice(1)
 				char = str.charAt(0)
-				if (char == '"' || char == "'"){
+				if (char == '"' || char == "'") {
 					inQuotes = true
 					currentQuote = char
 					str = str.slice(1)
@@ -236,6 +232,7 @@ function processAttributes(tag, str, buf, evalVars, line, path){
 }
 
 function render(compiled, vars) {
+
 	return compiled.map(instr => {
 		if (typeof instr == 'string') return instr
 		else if (instr.name) {
@@ -254,6 +251,7 @@ function render(compiled, vars) {
 }
 
 function optimize(arr) {
+
 	return arr.reduce((accumulator, current) => {
 		if (typeof accumulator[accumulator.length - 1] == 'string' && typeof current == 'string') {
 			accumulator[accumulator.length - 1] += current
@@ -267,7 +265,6 @@ function optimize(arr) {
 
 function renderFile(path, vars, callback) {
 	let error = null, out
-
 	try {
 		out = render(parseFile(path), vars)
 	} catch (err) {
@@ -277,7 +274,7 @@ function renderFile(path, vars, callback) {
 	return callback(error, out)
 }
 
-function parseFile(path){
+function parseFile(path) {
 	if (! cache[path])
 		cache[path] = optimize(parse(fs.readFileSync(path, 'utf8'), 1, path))
 	
