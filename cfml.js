@@ -236,26 +236,21 @@ function processAttributes(tag, str, buf, evalVars, line, path){
 }
 
 function render(compiled, vars) {
-	let out = '', instr
-
-	for (let i=0, j=compiled.length; i < j; i++){
-		instr = compiled[i]
-		if (typeof instr == 'string') out += instr
+	return compiled.map(instr => {
+		if (typeof instr == 'string') return instr
 		else if (instr.name) {
 			const tag = tags[instr.name]
-			out += tag.render(instr, vars, render)
+			return tag.render(instr, vars, render)
 		} else if (instr.value) {
-			if (vars[instr.value] !== undefined) out += vars[instr.value]
+			if (vars[instr.value] !== undefined) return vars[instr.value]
 			else {
 				let tmp
 				eval('tmp = ' + instr.value)
-				out += tmp
+				return tmp
 			}
 		}
-		else if (instr.abort) return out += instr.error ? instr.error : ''
-	}
-
-	return out
+		else if (instr.abort) return instr.error ? instr.error : ''
+	}).join('')
 }
 
 function optimize(arr) {
