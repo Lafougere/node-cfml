@@ -1,8 +1,7 @@
 /* globals require, exports */
 // jshint devel:true, curly: false, asi:true, -W084, -W061
 
-var fs = require('fs'),
-	util = require('util'),
+const fs = require('fs'),
 	tags = {
 		cfabort: require('./lib/cfabort'),
 		cfbreak: require('./lib/cfbreak'),
@@ -20,20 +19,18 @@ var fs = require('fs'),
 	REComment = /(<!---|--->)/g,
 	REQuoteOrGT = /['">]/,
 	REAttribNameDelim = /[\s=>]/,
-	REAttribs = /([a-z][a-z0-9_])\s*=\s*(["'])(.*?)([^\2]|\2\2)\2/gi,
 	RESpace = /\s/
 
 
 function parse(str, line, path, evalVars){
-	var buf = []
+	const buf = []
 	line = line || 1
 	processQueue(str, buf, evalVars, line, path)
 	return buf
 }
 
 function processQueue(str, buf, evalVars, line, path){
-
-	var pos = evalVars ? str.search(RETagOrPound) : str.indexOf('<') // skip to next interesting character
+	let pos = evalVars ? str.search(RETagOrPound) : str.indexOf('<') // skip to next interesting character
 
 	if (pos === -1){
 		// nothing found -> string is pure text -> just add to buffer
@@ -44,7 +41,7 @@ function processQueue(str, buf, evalVars, line, path){
 
 	if (pos > 0){
 		// it is safe to flush contents up to pos
-		var out = str.slice(0, pos)
+		const out = str.slice(0, pos)
 		line += out.split('\n').length - 1
 		buf.push(out)
 		str = str.slice(pos)
@@ -73,20 +70,20 @@ function processQueue(str, buf, evalVars, line, path){
 }
 
 function processValue(str, buf, evalVars, line, path){
-
-	var pos = str.indexOf('#', 1)
+	const pos = str.indexOf('#', 1)
 	buf.push({
 		type: 'value',
 		value: str.slice(1, pos)
 	})
 	str = str.slice(pos + 1)
+
 	processQueue(str, buf, evalVars, line, path)
 }
 
 function processComment(str, buf, evalVars, line, path){
-
-	var match, openCount = 0, start = 0
+	let match, openCount = 0, start = 0
 	REComment.lastIndex = 1
+
 	while (match = REComment.exec(str)) {
 		if (match[0] == '--->') {
 			if (openCount-- === 0) {
@@ -109,8 +106,7 @@ function processComment(str, buf, evalVars, line, path){
 }
 
 function processTag(str, buf, evalVars, line, path){
-
-	var nameLen = str.search(RESpaceOrGT),
+	let nameLen = str.search(RESpaceOrGT),
 		tag = {
 			name: str.slice(1, nameLen).toLowerCase(),
 			line: line,
@@ -127,6 +123,7 @@ function processTag(str, buf, evalVars, line, path){
 	tagDef = tags[tag.name]
 
 	if (tagDef.afterBegin) tagDef.afterBegin(tag, str, buf)
+
 	if (tagDef.hasBody) {
 		tag.match = tagDef.tagMatch
 		str = processBody(tag, str, buf, tag.evalVars, line, path)
@@ -136,30 +133,34 @@ function processTag(str, buf, evalVars, line, path){
 			delete tag.body
 		}
 	}
+
 	if (tagDef.afterEnd) tagDef.afterEnd(tag, str, buf, parseFile)
 	else buf.push(tag)
-	processQueue(str, buf, tag.evalVars, line, path)
 
+	processQueue(str, buf, tag.evalVars, line, path)
 }
 
 function processBody(tag, str, buf, evalVars, line, path){
-	var openCount = 0, match
+	let openCount = 0, match
 	tag.match.lastIndex = 0
+
 	while (match = tag.match.exec(str)) {
 		if (match[0].indexOf('</') > -1) {
 			if (openCount-- === 0) break;
 		}
 		else openCount++
 	}
+
 	tag.body = str.substr(0, match.index)
 	if (match.index + match[0].length >= str) str = ""
 	else str = str.substr(match.index + match[0].length)
+
 	return str
 }
 
 function processExpression(tag, str, buf, evalVars, line, path){
 
-	var endTag = false, inQuotes = false, pos, char, currentQuote
+	let endTag = false, inQuotes = false, pos, char, currentQuote
 
 	tag.expression = tag.expression || ''
 
@@ -178,8 +179,7 @@ function processExpression(tag, str, buf, evalVars, line, path){
 			tag.expression += str.slice(0, pos)
 			str = str.slice(pos + 1)
 			endTag = true
-		}
-		else {
+		} else {
 			// in quoted string
 			pos = str.indexOf(currentQuote)
 			tag.expression += str.slice(0, pos + 1)
@@ -187,18 +187,20 @@ function processExpression(tag, str, buf, evalVars, line, path){
 			inQuotes = false
 		}
 	}
+
 	return str
 }
 
 function processAttributes(tag, str, buf, evalVars, line, path){
 
-	var endTag = false, inQuotes = false, pos, char, currentQuote, attribute = {}
+	let endTag = false, inQuotes = false, pos, char, currentQuote, attribute = {}
 
 	tag.attributes = tag.attributes || {}
 
 	while (! endTag){
 		if (! inQuotes){
 			while (RESpace.test(str.charAt(0))) str = str.slice(1)
+
 			if (str.charAt(0) == '>'){
 				endTag = true
 				str = str.slice(1)
@@ -219,8 +221,7 @@ function processAttributes(tag, str, buf, evalVars, line, path){
 				}
 			}
 
-		}
-		else {
+		} else {
 			// in quoted string
 			pos = str.indexOf(currentQuote)
 			inQuotes = false
@@ -234,20 +235,19 @@ function processAttributes(tag, str, buf, evalVars, line, path){
 	return str
 }
 
-function render(compiled, vars, callback){
-	var out = '', instr
+function render(compiled, vars) {
+	let out = '', instr
 
-	for (var i=0, j=compiled.length; i < j; i++){
+	for (let i=0, j=compiled.length; i < j; i++){
 		instr = compiled[i]
 		if (typeof instr == 'string') out += instr
 		else if (instr.name) {
-			var tag = tags[instr.name]
+			const tag = tags[instr.name]
 			out += tag.render(instr, vars, render)
-		}
-		else if (instr.value) {
-			if (vars[instr.value]) out += vars[instr.value]
+		} else if (instr.value) {
+			if (vars[instr.value] !== undefined) out += vars[instr.value]
 			else {
-				var tmp
+				let tmp
 				eval('tmp = ' + instr.value)
 				out += tmp
 			}
@@ -258,31 +258,38 @@ function render(compiled, vars, callback){
 	return out
 }
 
-function optimize(arr){
-	return arr.reduce(function(accum, current){
-		if (typeof accum[accum.length - 1] == 'string' && typeof current == 'string') {
-			accum[accum.length - 1] += current
-			return accum
+function optimize(arr) {
+	return arr.reduce((accumulator, current) => {
+		if (typeof accumulator[accumulator.length - 1] == 'string' && typeof current == 'string') {
+			accumulator[accumulator.length - 1] += current
+			return accumulator
 		}
 		if (current.parsedBody) current.parsedBody = optimize(current.parsedBody)
-		accum.push(current)
-		return accum
+		accumulator.push(current)
+		return accumulator
 	}, [])
 }
 
-function renderFile(path, vars, callback){
-	var out = render(parseFile(path), vars, callback)
-	return callback(null, out)
+function renderFile(path, vars, callback) {
+	let error = null, out
+
+	try {
+		out = render(parseFile(path), vars)
+	} catch (err) {
+		error = err
+	}
+
+	return callback(error, out)
 }
 
 function parseFile(path){
-	if (! cache[path]){
+	if (! cache[path])
 		cache[path] = optimize(parse(fs.readFileSync(path, 'utf8'), 1, path))
-	}
+	
 	return cache[path]
 }
 
-function renderString(str, vars){
+function renderString(str, vars) {
 	return render(parse(str, 1, ''), vars)
 }
 
